@@ -1,0 +1,35 @@
+{
+  "name": "createjs-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf dist/",
+    "dev": "webpack-dev-server",
+    "prebuild": "npm run clean",
+    "build": "webpack",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "createjs": "^1.0.1",
+    "createjs-easeljs": "^0.8.2"
+  },
+  "devDependencies": {
+    "@types/createjs": "0.0.29",
+    "@types/node": "^8.0.30",
+    "awesome-typescript-loader": "^3.2.3",
+    "copy-webpack-plugin": "^4.0.1",
+    "css-loader": "^0.28.7",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "html-loader": "^0.5.1",
+    "html-webpack-plugin": "^2.30.1",
+    "rimraf": "^2.6.2",
+    "style-loader": "^0.19.0",
+    "typescript": "^2.5.2",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.8.2",
+    "webpack-notifier": "^1.5.0"
+  }
+}
