@@ -1,5 +1,5 @@
 export function range(min: number = 0, max: number = 1): number {
-    return Math.random() * (max - min + 1);
+    return Math.random() * (max - min) + min;
 }
 
 export function rangeInt(min: number = 0, max: number = 1): number {
@@ -12,4 +12,8 @@ export function randomlyDelay(fn: Function, from: number = 0, to: number = 1000,
             resolve(fn.apply(ctx || this, args));
         }, rangeInt(from, to));
     });
+}
+
+export function chance(p: number = 0.1): boolean {
+    return Math.random() <= p;
 }

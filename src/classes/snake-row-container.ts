@@ -1,5 +1,5 @@
 import { Snake, SnakeDirection } from './snake';
-import { randomlyDelay, rangeInt } from '../utils/random';
+import { randomlyDelay, rangeInt, chance } from '../utils/random';
 
 export class SnakeRowContainer extends createjs.Container {
 
@@ -34,7 +34,7 @@ export class SnakeRowContainer extends createjs.Container {
         let snake = new Snake(this.snakeLength, this.snakeSize);
         snake.y = 0;
         snake.x = x;
-        snake.direction = rangeInt(0, 1) ? SnakeDirection.Right : SnakeDirection.Left;
+        snake.direction = chance(0.5) ? SnakeDirection.Right : SnakeDirection.Left;
 
         return snake;
     }

@@ -10,6 +10,10 @@ export class Snake extends createjs.Container {
     private _currentFrames: number[] = [];
     private _counter: number = 0;
     private _steps: number = 0;
+    private _stepsLeft: number = 0;
+    private _stepsRight: number = 0;
+    private _stepsUp: number = 0;
+    private _stepsDown: number = 0;
 
     constructor(
         public length: number = 10,
@@ -48,16 +52,16 @@ export class Snake extends createjs.Container {
             this._steps++;
             switch (this.direction) {
                 case SnakeDirection.Right:
-                    this._addShape(this._steps * this.size);
+                    this._addShape(++this._stepsRight * this.size);
                     break;
                 case SnakeDirection.Left:
-                    this._addShape(-(this._steps * this.size));
+                    this._addShape(-(++this._stepsLeft * this.size));
                     break;
                 case SnakeDirection.Down:
-                    this._addShape(this.x, this._steps * this.size);
+                    this._addShape(this.x, ++this._stepsDown * this.size);
                     break;
                 case SnakeDirection.Up:
-                    this._addShape(this.x, -(this._steps * this.size));
+                    this._addShape(this.x, -(++this._stepsUp * this.size));
                     break;
             }
 
