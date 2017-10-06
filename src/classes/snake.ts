@@ -1,6 +1,11 @@
 import * as constants from '../const';
 
+export enum SnakeDirection {
+    Left, Right, Up, Down
+}
+
 export class Snake extends createjs.Container {
+    public direction: SnakeDirection = SnakeDirection.Left;
 
     private _currentFrames: number[] = [];
     private _counter: number = 0;
@@ -14,7 +19,7 @@ export class Snake extends createjs.Container {
         public maxSteps: number = 10
     ) {
         super();
-        this._addShape(0);
+        this._addShape(0, 0);
     }
 
     public play() {
@@ -39,7 +44,23 @@ export class Snake extends createjs.Container {
 
         if (this._counter % 3 === 0 && this.children.length < this.length) {
             this._counter = 0;
-            this._addShape(++this._steps * this.size);
+
+            this._steps++;
+            switch (this.direction) {
+                case SnakeDirection.Right:
+                    this._addShape(this._steps * this.size);
+                    break;
+                case SnakeDirection.Left:
+                    this._addShape(-(this._steps * this.size));
+                    break;
+                case SnakeDirection.Down:
+                    this._addShape(this.x, this._steps * this.size);
+                    break;
+                case SnakeDirection.Up:
+                    this._addShape(this.x, -(this._steps * this.size));
+                    break;
+            }
+
             let event = new createjs.Event('step', true, true);
             event.data = {step: this._steps};
             this.dispatchEvent(event);
@@ -57,11 +78,11 @@ export class Snake extends createjs.Container {
         }
     }
 
-    private _addShape(x: number) {
+    private _addShape(x: number, y: number = 0) {
         let shape = new createjs.Shape();
         shape.graphics
             .beginFill(constants.SNAKE_COLOR)
-            .drawRect(x + this.padding, this.padding, this.size - this.padding, this.size - this.padding);
+            .drawRect(x + this.padding, y + this.padding, this.size - this.padding, this.size - this.padding);
         shape.alpha = 0;
         this.addChild(shape);
     }
