@@ -70,11 +70,105 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", { value: true });
+var random_1 = __webpack_require__(1);
+var Container = /** @class */ (function (_super) {
+    __extends(Container, _super);
+    function Container() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._timers = [];
+        return _this;
+    }
+    Container.prototype.randomDelay = function (fn, from, to) {
+        var timer;
+        var cb = function callback() {
+            fn.call(this);
+            var index = this._timers.indexOf(timer);
+            if (index !== -1) {
+                this._timers.splice(index, 1);
+            }
+            clearTimeout(timer);
+        };
+        timer = random_1.delay(cb, from, to, this);
+    };
+    Container.prototype.destroy = function () {
+        this._timers.forEach(function (timer) { return clearTimeout(timer); });
+        // .removeAllChildren method is slower than just reinitializing the array
+        this.children = [];
+    };
+    return Container;
+}(createjs.Container));
+exports.Container = Container;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function range(min, max) {
+    if (min === void 0) { min = 0; }
+    if (max === void 0) { max = 1; }
+    return Math.random() * (max - min) + min;
+}
+exports.range = range;
+function rangeInt(min, max) {
+    if (min === void 0) { min = 0; }
+    if (max === void 0) { max = 1; }
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+exports.rangeInt = rangeInt;
+function delay(fn, from, to, ctx, args) {
+    if (from === void 0) { from = 0; }
+    if (to === void 0) { to = 1000; }
+    if (ctx === void 0) { ctx = null; }
+    if (args === void 0) { args = null; }
+    return setTimeout(fn.bind(ctx, args), rangeInt(from, to));
+}
+exports.delay = delay;
+function delayPromise(fn, from, to, ctx, args) {
+    var _this = this;
+    if (from === void 0) { from = 0; }
+    if (to === void 0) { to = 1000; }
+    if (ctx === void 0) { ctx = null; }
+    if (args === void 0) { args = null; }
+    return new Promise(function (resolve) {
+        delay(function () {
+            resolve(fn.apply(ctx || _this, args));
+        }, from, to, ctx, args);
+    });
+}
+exports.delayPromise = delayPromise;
+function chance(p) {
+    if (p === void 0) { p = 0.1; }
+    return Math.random() <= p;
+}
+exports.chance = chance;
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -93,22 +187,29 @@ exports.SNAKE_FADE_STEP = 0.01;
 
 
 /***/ }),
-/* 1 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var main_scene_1 = __webpack_require__(2);
+var main_scene_1 = __webpack_require__(4);
 exports.MainScene = main_scene_1.MainScene;
+var scene;
 function start(canvas) {
-    return new main_scene_1.MainScene(canvas).start();
+    if (!scene) {
+        scene = new main_scene_1.MainScene(canvas);
+    }
+    return scene.start();
 }
 exports.start = start;
+function restart() {
+    return scene.restart();
+}
 
 
 /***/ }),
-/* 2 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -124,9 +225,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var scene_1 = __webpack_require__(3);
-var snake_row_container_1 = __webpack_require__(4);
-var constants = __webpack_require__(0);
+var scene_1 = __webpack_require__(5);
+var snake_row_container_1 = __webpack_require__(6);
+var constants = __webpack_require__(2);
 var MainScene = /** @class */ (function (_super) {
     __extends(MainScene, _super);
     function MainScene(canvas) {
@@ -138,6 +239,11 @@ var MainScene = /** @class */ (function (_super) {
     MainScene.prototype.render = function () {
         this.containers.forEach(function (container) { return container.play(); });
         _super.prototype.render.call(this);
+    };
+    MainScene.prototype.restart = function () {
+        this.removeAllChildren();
+        this._initSceneObjects();
+        return this;
     };
     MainScene.prototype.setBgColors = function (top, bottom) {
         this._initBackground(top, bottom);
@@ -157,6 +263,9 @@ var MainScene = /** @class */ (function (_super) {
         return this.backgroundShape;
     };
     MainScene.prototype._initSnakeContainers = function () {
+        // call destroy on every element to stop timers
+        this.containers.forEach(function (container) { return container.destroy(); });
+        this.containers = [];
         var size = this.canvasHeight / constants.LINES_COUNT;
         for (var i = 0; i < constants.LINES_COUNT; i++) {
             var container = new snake_row_container_1.SnakeRowContainer(constants.SNAKES_PER_LINE_COUNT, size, constants.SNAKE_LENGTH, this.canvasWidth);
@@ -171,7 +280,7 @@ exports.MainScene = MainScene;
 
 
 /***/ }),
-/* 3 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -189,9 +298,10 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Scene = /** @class */ (function (_super) {
     __extends(Scene, _super);
-    function Scene() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function Scene(canvas) {
+        var _this = _super.call(this, canvas) || this;
         _this._started = false;
+        _this.render = _this.render.bind(_this);
         return _this;
     }
     Object.defineProperty(Scene.prototype, "canvasWidth", {
@@ -226,7 +336,6 @@ var Scene = /** @class */ (function (_super) {
         this.update();
     };
     Scene.prototype._attachEvents = function () {
-        this.render = this.render.bind(this);
         createjs.Ticker.addEventListener('tick', this.render);
     };
     Scene.prototype._detachEvents = function () {
@@ -239,7 +348,7 @@ exports.Scene = Scene;
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -255,8 +364,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var snake_1 = __webpack_require__(5);
-var random_1 = __webpack_require__(6);
+var container_1 = __webpack_require__(0);
+var snake_1 = __webpack_require__(7);
+var random_1 = __webpack_require__(1);
 var SnakeRowContainer = /** @class */ (function (_super) {
     __extends(SnakeRowContainer, _super);
     function SnakeRowContainer(snakeCount, snakeSize, snakeLength, maxWidth) {
@@ -269,7 +379,7 @@ var SnakeRowContainer = /** @class */ (function (_super) {
         _this.snakeSize = snakeSize;
         _this.snakeLength = snakeLength;
         _this.maxWidth = maxWidth;
-        random_1.randomlyDelay(_this._initSnakes.bind(_this), 0, 1000);
+        _this.randomDelay(_this._initSnakes, 0, 1000);
         return _this;
     }
     SnakeRowContainer.prototype.play = function () {
@@ -278,7 +388,7 @@ var SnakeRowContainer = /** @class */ (function (_super) {
     SnakeRowContainer.prototype._initSnakes = function () {
         var _this = this;
         for (var i = 0; i < this.snakeCount; i++) {
-            random_1.randomlyDelay(this._createSnake.bind(this), 0, 3000).then(this.addChild.bind(this));
+            this.randomDelay(this.addChild.bind(this, this._createSnake()), 0, 3000);
         }
         this.on('fade', function (_a) {
             var target = _a.target;
@@ -295,12 +405,12 @@ var SnakeRowContainer = /** @class */ (function (_super) {
         return snake;
     };
     return SnakeRowContainer;
-}(createjs.Container));
+}(container_1.Container));
 exports.SnakeRowContainer = SnakeRowContainer;
 
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -316,7 +426,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants = __webpack_require__(0);
+var container_1 = __webpack_require__(0);
+var constants = __webpack_require__(2);
 var SnakeDirection;
 (function (SnakeDirection) {
     SnakeDirection[SnakeDirection["Left"] = 0] = "Left";
@@ -418,47 +529,8 @@ var Snake = /** @class */ (function (_super) {
         return constants.SNAKE_ALPHA_FRAMES[this._currentFrames[shapeIndex]];
     };
     return Snake;
-}(createjs.Container));
+}(container_1.Container));
 exports.Snake = Snake;
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function range(min, max) {
-    if (min === void 0) { min = 0; }
-    if (max === void 0) { max = 1; }
-    return Math.random() * (max - min) + min;
-}
-exports.range = range;
-function rangeInt(min, max) {
-    if (min === void 0) { min = 0; }
-    if (max === void 0) { max = 1; }
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-exports.rangeInt = rangeInt;
-function randomlyDelay(fn, from, to, ctx, args) {
-    var _this = this;
-    if (from === void 0) { from = 0; }
-    if (to === void 0) { to = 1000; }
-    if (ctx === void 0) { ctx = null; }
-    if (args === void 0) { args = null; }
-    return new Promise(function (resolve) {
-        setTimeout(function () {
-            resolve(fn.apply(ctx || _this, args));
-        }, rangeInt(from, to));
-    });
-}
-exports.randomlyDelay = randomlyDelay;
-function chance(p) {
-    if (p === void 0) { p = 0.1; }
-    return Math.random() <= p;
-}
-exports.chance = chance;
 
 
 /***/ })
