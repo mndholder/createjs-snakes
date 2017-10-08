@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf dist/ && rimraf build/",
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --config ./config/webpack.config.app.js",
     "prebuild": "npm run clean",
     "build": "npm run build-app && npm run build-lib && npm run build-lib-min",
     "build-app": "webpack --config ./config/webpack.config.app.js",

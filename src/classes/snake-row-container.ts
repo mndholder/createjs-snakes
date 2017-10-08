@@ -1,7 +1,8 @@
+import { Container } from './lib/container';
 import { Snake, SnakeDirection } from './snake';
-import { randomlyDelay, rangeInt, chance } from '../utils/random';
+import { rangeInt, chance } from '../utils/random';
 
-export class SnakeRowContainer extends createjs.Container {
+export class SnakeRowContainer extends Container {
 
     constructor(
         public snakeCount: number = 3,
@@ -10,7 +11,7 @@ export class SnakeRowContainer extends createjs.Container {
         public maxWidth: number = 300
     ) {
         super();
-        randomlyDelay(this._initSnakes.bind(this), 0, 1000);
+        this.randomDelay(this._initSnakes, 0, 1000);
     }
 
     public play() {
@@ -19,7 +20,7 @@ export class SnakeRowContainer extends createjs.Container {
 
     private _initSnakes() {
         for (let i=0; i < this.snakeCount; i++) {
-            randomlyDelay(this._createSnake.bind(this), 0, 3000).then(this.addChild.bind(this));
+            this.randomDelay(this.addChild.bind(this, this._createSnake()), 0, 3000);
         }
 
         this.on('fade', ({target}: createjs.Event) => {

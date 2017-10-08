@@ -1,4 +1,4 @@
-import { Scene } from './classes/scene';
+import { Scene } from './classes/lib/scene';
 import { SnakeRowContainer } from './classes/snake-row-container';
 import * as constants from './const';
 
@@ -7,7 +7,7 @@ export class MainScene extends Scene {
     public containers: SnakeRowContainer[] = [];
 
     constructor(
-        canvas: HTMLCanvasElement
+        canvas: HTMLCanvasElement | string | Object
     ) {
         super(canvas);
         this._initSceneObjects();
@@ -16,6 +16,12 @@ export class MainScene extends Scene {
     render() {
         this.containers.forEach((container: SnakeRowContainer) => container.play());
         super.render();
+    }
+
+    restart(): MainScene {
+        this.removeAllChildren();
+        this._initSceneObjects();
+        return this;
     }
 
     public setBgColors(top: string, bottom: string) {
@@ -39,6 +45,9 @@ export class MainScene extends Scene {
     }
 
     private _initSnakeContainers() {
+        // call destroy on every element to stop timers
+        this.containers.forEach((container: SnakeRowContainer) => container.destroy());
+        this.containers = [];
         const size = this.canvasHeight / constants.LINES_COUNT;
         for (let i = 0; i < constants.LINES_COUNT; i++) {
             let container = new SnakeRowContainer(constants.SNAKES_PER_LINE_COUNT, size, constants.SNAKE_LENGTH, this.canvasWidth);

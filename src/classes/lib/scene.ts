@@ -1,6 +1,11 @@
 export class Scene extends createjs.Stage {
     private _started: boolean = false;
 
+    constructor(canvas: HTMLCanvasElement | string | Object) {
+        super(canvas);
+        this.render = this.render.bind(this);
+    }
+
     get canvasWidth() {
         return (this.canvas as HTMLCanvasElement).width;
     }
@@ -30,7 +35,6 @@ export class Scene extends createjs.Stage {
     }
 
     private _attachEvents() {
-        this.render = this.render.bind(this);
         createjs.Ticker.addEventListener('tick', this.render);
     }
 

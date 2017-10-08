@@ -1,10 +1,11 @@
+import { Container } from './lib/container';
 import * as constants from '../const';
 
 export enum SnakeDirection {
     Left, Right, Up, Down
 }
 
-export class Snake extends createjs.Container {
+export class Snake extends Container {
     public direction: SnakeDirection = SnakeDirection.Left;
 
     private _currentFrames: number[] = [];

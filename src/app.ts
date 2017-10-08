@@ -1,34 +1,40 @@
+declare var module: {
+    id: string;
+};
+
 import './vendor';
 import './css/main.css';
 import * as constants from './const';
 import { MainScene } from './main-scene';
+import { throttle } from './utils/throttle';
 
-let scene: MainScene = null,
-    canvas: HTMLCanvasElement = null;
+let scene: MainScene = null;
 
-function init() {
+function initCanvas(): HTMLCanvasElement {
+    let canvas = document.querySelector('#createjs-canvas') as HTMLCanvasElement;
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight;
+    return canvas;
+}
+
+function initScene() {
     createjs.Ticker.removeAllEventListeners();
     createjs.Ticker.timingMode = constants.CREATEJS_TIMING_MODE;
     createjs.Ticker.framerate = constants.CREATEJS_FRAMERATE;
-
-    canvas = document.querySelector('#createjs-canvas') as HTMLCanvasElement;
-    canvas.width = document.body.clientWidth;
-    canvas.height = document.body.clientHeight;
-
-    if (scene) {
-        scene.stop();
-        scene = undefined;
-    }
-
-    scene = new MainScene(document.querySelector('#createjs-canvas') as HTMLCanvasElement);
+    scene = new MainScene(initCanvas());
     scene.start();
 }
 
-// window.addEventListener('resize', init);
+window.addEventListener('resize', throttle(100, () => setTimeout(() => {
+    if (scene) {
+        initCanvas();
+        scene.restart();
+    }
+}, 100)));
 
 (document.readyState === 'complete')
-    ? init()
-    : document.addEventListener('DOMContentLoaded', init);
+    ? initScene()
+    : document.addEventListener('DOMContentLoaded', initScene);
 
 if (module['hot']) {
     module['hot'].accept();
