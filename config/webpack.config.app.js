@@ -1,20 +1,15 @@
-const path = require('path'),
-    webpack = require('webpack'),
-    WebpackNotifierPlugin = require('webpack-notifier'),
-    ExtractTextPlugin = require('extract-text-webpack-plugin'),
-    HtmlWebpackPlugin = require('html-webpack-plugin'),
-    CopyWebpackPlugin = require('copy-webpack-plugin');
-const { CheckerPlugin } = require('awesome-typescript-loader');
+const   webpack = require('webpack'),
+        WebpackNotifierPlugin = require('webpack-notifier'),
+        ExtractTextPlugin = require('extract-text-webpack-plugin'),
+        HtmlWebpackPlugin = require('html-webpack-plugin'),
+        CopyWebpackPlugin = require('copy-webpack-plugin'),
+        { CheckerPlugin } = require('awesome-typescript-loader'),
+        helpers = require('./helpers'),
+        root = helpers.root.bind(this, '..');
 
-// Helper functions
-function root(args) {
-    args = Array.prototype.slice.call(arguments, 0);
-    return path.join.apply(path, [__dirname].concat(args));
-}
-
-const ENV = process.env.npm_lifecycle_event;
-const isProd = ENV === 'build';
-const isDev = ENV === 'dev';
+const   ENV = process.env.npm_lifecycle_event,
+        isProd = ENV === 'build',
+        isDev = ENV === 'dev';
 
 module.exports = function makeWebpackConfig() {
     let config = {};
