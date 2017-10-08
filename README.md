@@ -9,10 +9,10 @@ A simple [CreateJS](http://createjs.com/) + Typescript demo. The resulting stage
 - Include it in your project and start:
 
 ```javascript
-import { start } from 'createjs-snakes-demo';
+import { start } from 'createjs-snakes';
 start(document.getElementById('my-canvas'));
 ```
 
 # Demo
 
-[link](http://none)
+[plunkr](https://embed.plnkr.co/6xjyd5EPHMsI29pmLKIU/)
