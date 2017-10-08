@@ -204,8 +204,9 @@ function start(canvas) {
 }
 exports.start = start;
 function restart() {
-    return scene.restart();
+    return scene && scene.restart();
 }
+exports.restart = restart;
 
 
 /***/ }),

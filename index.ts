@@ -10,7 +10,7 @@ function start(canvas: HTMLCanvasElement): MainScene {
 }
 
 function restart(): MainScene {
-    return scene.restart();
+    return scene && scene.restart();
 }
 
-export { MainScene, start };
+export { MainScene, start, restart };
