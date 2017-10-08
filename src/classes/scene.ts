@@ -15,12 +15,14 @@ export class Scene extends createjs.Stage {
             this._started = true;
             this.dispatchEvent(new createjs.Event('start', true, true));
         }
+        return this;
     }
 
     public stop() {
         this._started = false;
         this._detachEvents();
         this.dispatchEvent(new createjs.Event('stop', true, true));
+        return this;
     }
 
     public render() {
